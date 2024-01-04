@@ -2,43 +2,53 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-int main(void)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    GLFWwindow* window;
+    glViewport(0, 0, width, height);
+}
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+void processInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
+
+int main()
+{
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
+
+    if (window == nullptr) {
+        std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
-
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGL()) {
-        std::cout << "Can't load GLAD" << std::endl;
-        return -1;
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return  -1;
     }
 
-    std::cout << "OpenGL " << GLVersion.major << "." << GLVersion.minor << std::endl;
+    glViewport(0, 0, 800, 600);
 
-    glClearColor(0, 1, 0, 1);
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // render loop
+    while (!glfwWindowShouldClose(window)) {
+        // input
+        processInput(window);
+
+        // rendering commands here
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        /* Swap front and back buffers */
+        // check and call events and swap the buffers
         glfwSwapBuffers(window);
-
-        /* Poll for and process events */
         glfwPollEvents();
     }
 
